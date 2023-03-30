@@ -38,7 +38,7 @@ public class MensajesDAO {
         }
     }
     
-    public static void leerMensajesDB(){
+    public static List<Mensajes> leerMensajesDB(){
         
         List<Mensajes> list = new ArrayList<>();
         
@@ -59,17 +59,52 @@ public class MensajesDAO {
                 list.add(m);
             }                              
         }catch(SQLException e){
+            System.out.println("No se pudieron recuperar los mensajes");
             System.out.println(e);
         }
-        
+        return list;
     }
     
     public static void borrarMensajeDB(int id_mensaje){
-        
+        Conexion db_connect = new Conexion();
+        try(Connection conexion = db_connect.get_connection()){
+            PreparedStatement ps = null;
+            try{
+                String query ="DELETE FROM mensajes WHERE id_mensaje = ?";
+                ps=conexion.prepareStatement(query);
+                ps.setInt(1, id_mensaje);
+                ps.executeUpdate();
+                System.out.println("El mensaje ha sido borrado");
+                
+            }catch(SQLException ex){
+                System.out.println("No se pudo borar el mensaje");
+                System.out.println(ex);
+            }
+        }catch(SQLException e){
+            System.out.println(e);
+        }
     }
     
     public static void actualizarMensajeDB(Mensajes mensaje){
-        
+        Conexion db_connect = new Conexion();
+        try(Connection conexion = db_connect.get_connection()){
+            PreparedStatement ps = null;
+            
+            try{
+                String query ="UPDATE mensajes SET mensaje = ? WHERE id_mensaje = ?";
+                ps=conexion.prepareStatement(query);
+                ps.setString(1, mensaje.getMensaje());
+                ps.setInt(2, mensaje.getId_mensaje());
+                ps.executeUpdate();
+                System.out.println("El mensaje se actualizó correctamente");
+                
+            }catch(SQLException ex){
+                System.out.println(ex);
+                System.out.println("No se pudo actualizar el mensaje");
+            }
+        }catch(SQLException e){
+            System.out.println(e);
+        }
     }
     
 }
